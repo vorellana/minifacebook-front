@@ -1,0 +1,39 @@
+.form-group {
+    margin-top: 20px;
+    margin-bottom: 5px !important;
+    /* margin-bottom: 5px !important; */
+}
+
+.custom-mfc-select {
+    width: 90px !important;
+    margin-right: 8px !important;
+}
+
+.session-button {
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.session-button button {
+    background-color: white !important;
+    color:#007bff !important;
+    font-weight: bold;
+}
+
+.session-button button:hover {
+    color:#007bff !important;
+}
+
+.session-button button:visited {
+    color: #007bff !important;
+}
+
+.session-button button::after {
+    color: #007bff !important;
+}
+
+.title-mnf{
+    color: white;
+    font-size: xxx-large ;
+    font-family: cursive;
+}
