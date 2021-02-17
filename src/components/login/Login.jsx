@@ -82,9 +82,6 @@ function Login (){
 
 
     }
-    
-    console.log("entrando al login ps...");
-    console.log(process.env);
 
     return (
         <div>
@@ -100,18 +97,18 @@ function Login (){
                                 <form className="form-signin">
                                     <div className="form-group">
                                         <label>E-mail:</label>
-                                        <input type="email" className="form-control" placeholder="E-mail" required
+                                        <input id="inp-email" type="email" className="form-control" placeholder="E-mail" required
                                             value = {email} onChange = { e => setEmail(e.target.value)}/>
                                         <span className="span-mnf" hidden={showValidEmail} >{msgValidEmail}</span>
                                     </div>
                                     <div className="form-group">
                                         <label>Password</label>
-                                        <input type="password" className="form-control" placeholder="Password" required
+                                        <input id="inp-password" type="password" className="form-control" placeholder="Password" required
                                             value = {password} onChange = { e => setPassword(e.target.value)}/>
                                         <span className="span-mnf" hidden ={showValidPassword} >{msgValidPassword}</span>
                                     </div>
                                     <div className="form-group">
-                                        <Button variant="primary" size="lg"  style={{height: 60}} block onClick={login}><h5>Login</h5></Button>    
+                                        <Button id="btn-login" variant="primary" size="lg"  style={{height: 60}} block onClick={login}><h5>Login</h5></Button>    
                                     </div>                                    
                                 </form>
                             </div>
