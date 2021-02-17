@@ -3,11 +3,8 @@ import React, { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal'
 import service from './../../services/users.service'
-
 import Cookies from 'universal-cookie';
 
-// const Login = () => {
-// function Login(){
 function Login (){    
     // ***** set state *****
     const [email, setEmail] = useState("");
@@ -82,80 +79,64 @@ function Login (){
                 handleOpenModal(res.message, 3000)
             }
         }
+
+
     }
+    
+    console.log("entrando al login ps...");
+    console.log(process.env);
 
-        return (
-            <div>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-                            
-                            <div class="d-flex justify-content-center" style={{marginTop: 50}}>
-                                <div className="title-mnf">MiniFacebook</div>
-                            </div>
-
-                            <div class="card card-signin my-5">
-                                <div class="card-body">
-
-                                    <h5 class="card-title text-center"><b>Iniciar sesión</b></h5>
-
-                                    <form class="form-signin">
-                                        <div class="form-group">
-                                            <label>E-mail:</label>
-                                            <input type="email" class="form-control" placeholder="E-mail" required autofocus
-                                                value = {email} onChange = { e => setEmail(e.target.value)}/>
-                                            <span className="span-mnf" hidden={showValidEmail} >{msgValidEmail}</span>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Password</label>
-                                            <input type="password" class="form-control" placeholder="Password" required
-                                                value = {password} onChange = { e => setPassword(e.target.value)}/>
-                                            <span className="span-mnf" hidden ={showValidPassword} >{msgValidPassword}</span>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <Button variant="primary" size="lg"  style={{height: 60}} block onClick={login}><h5>Login</h5></Button>    
-                                        </div>                                    
-
-                                    </form>
-                                </div>
+    return (
+        <div>
+            <div className="container">
+                <div className="row">
+                    <div className="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                        <div className="d-flex justify-content-center" style={{marginTop: 50}}>
+                            <div className="title-mnf">MiniFacebook</div>
+                        </div>
+                        <div className="card card-signin my-5">
+                            <div className="card-body">
+                                <h5 className="card-title text-center"><b>Iniciar sesión</b></h5>
+                                <form className="form-signin">
+                                    <div className="form-group">
+                                        <label>E-mail:</label>
+                                        <input type="email" className="form-control" placeholder="E-mail" required
+                                            value = {email} onChange = { e => setEmail(e.target.value)}/>
+                                        <span className="span-mnf" hidden={showValidEmail} >{msgValidEmail}</span>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Password</label>
+                                        <input type="password" className="form-control" placeholder="Password" required
+                                            value = {password} onChange = { e => setPassword(e.target.value)}/>
+                                        <span className="span-mnf" hidden ={showValidPassword} >{msgValidPassword}</span>
+                                    </div>
+                                    <div className="form-group">
+                                        <Button variant="primary" size="lg"  style={{height: 60}} block onClick={login}><h5>Login</h5></Button>    
+                                    </div>                                    
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <Modal show={openSimpleModal} onHide={ () => setOpenSimpleModal(false) }>
-                    <Modal.Header closeButton><Modal.Title>Información</Modal.Title></Modal.Header>
-                    <Modal.Body><p>{messageModal}</p></Modal.Body>
-                </Modal>
-
-                <Modal show={openLoaderModal} onHide={ () => setOpenLoaderModal(false) } className="modal-dialog-centered" >
-                    <Modal.Body>
-                        {/* <div class="spinner-border" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div> */}
-
-                            <div class="d-flex justify-content-center" style={{marginTop: 50}}>
-                                {/* <div className="title-mnf">MiniFacebook</div> */}
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            </div>
-
-                            <div class="d-flex justify-content-center" style={{marginTop: 10}}>
-                                <p>Verificando...</p>
-                                {/* <div class="form-group">
-                                        <p>Verificando...</p>
-                                </div> */}
-                            </div>                            
-
-                        {/* <p>{messageModal}</p> */}
-                    </Modal.Body>
-                </Modal>
-
             </div>
-        )
+            <Modal show={openSimpleModal} onHide={ () => setOpenSimpleModal(false) }>
+                <Modal.Header closeButton><Modal.Title>Información</Modal.Title></Modal.Header>
+                <Modal.Body><p>{messageModal}</p></Modal.Body>
+            </Modal>
+            <Modal show={openLoaderModal} onHide={ () => setOpenLoaderModal(false) } className="modal-dialog-centered" >
+                <Modal.Body>
+                        <div className="d-flex justify-content-center" style={{marginTop: 50}}>
+                            <div className="spinner-border text-primary" role="status">
+                                <span className="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                        <div className="d-flex justify-content-center" style={{marginTop: 10}}>
+                            <p>Verificando...</p>
+                        </div>                            
+                </Modal.Body>
+            </Modal>
+        </div>
+    )
 }
 
 export default Login

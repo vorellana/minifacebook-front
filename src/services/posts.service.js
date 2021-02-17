@@ -1,11 +1,8 @@
 import axios from 'axios';
 
 const exp = {}
-    
-// const baseUrl = 'http://192.168.1.2:3000/api'; // test
-// const baseUrl = 'http://localhost:3000/api'; // test
-const baseUrl = 'https://minifacebook-21.herokuapp.com/api' // prod
 
+const baseUrl = process.env.REACT_APP_API_MFC;
 let response;
 
 exp.getPostsId = async (id)  => {
