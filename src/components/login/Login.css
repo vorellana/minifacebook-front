@@ -30,12 +30,16 @@
   
   .form-signin .btn {
     font-size: 80%;
-    border-radius: 5rem;
+    border-radius: 0.5rem;
     letter-spacing: .1rem;
     font-weight: bold;
     padding: 1rem;
     transition: all 0.2s;
   }
+
+  /* .btn-primary{
+    height: 60px;
+  } */
   
   .form-label-group {
     position: relative;
@@ -44,7 +48,7 @@
   
   .form-label-group input {
     height: auto;
-    border-radius: 2rem;
+    border-radius: 0.5rem;
   }
   
   .form-label-group>input,
@@ -99,15 +103,12 @@
     color: #777;
   }
   
-  .btn-google {
-    color: white;
-    background-color: #ea4335;
+  .span-mnf{
+    color: red;
+    font-weight: bold;
+    font-size: smaller;
   }
-  
-  .btn-facebook {
-    color: white;
-    background-color: #3b5998;
-  }
+
   
   /* Fallback for Edge
   -------------------------------------------------- */
@@ -134,3 +135,12 @@
     }
   }
   
+  /* other customs
+  -------------------------------------------------- */
+
+.modal {
+  position: fixed;
+  top: 20% !important;
+  left: 50%;
+  /* transform: translate(-50%, -50%); */
+}

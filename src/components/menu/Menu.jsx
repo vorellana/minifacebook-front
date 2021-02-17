@@ -1,112 +1,98 @@
 import './Menu.css'
 import React, { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form';
-import ReactDOM from 'react-dom';
-
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-
-import axios from 'axios';
-
 import service from './../../services/posts.service'
-
-const volar = ()  => {
-    console.log("volando me voy...")
-}
-
-// var posts;
+import userService from './../../services/users.service'
+import Tweet from './../tweet/Tweet'
+import Cookies from 'universal-cookie';
 
 function Menu(){
+
+    // ***** other consts ******
+    const cookies = new Cookies();
+
+    // ***** set state *****
     const [posts, setPosts] = useState([]);
-    // const [count, setCount] = useState(0);
-    const [user_id,setUser_id ] = useState("");
-    const [message,setMessage ] = useState("");
-    const [privacy,setPrivacy ] = useState("");
+    // const [user_id, setUser_id ] = useState("6026086502d02327f4d55a7a"); // prueba
+    const [user_id, setUser_id ] = useState(cookies.get('user_id')); // prueba
+    const [post_id, setPost_id ] = useState("");
+    const [message, setMessage ] = useState("");
+    const [privacy, setPrivacy ] = useState("F");
+    const [filterPosts, setFilterPosts ] = useState("A");
+    const [messageModal, setMessageModal ] = useState("");
+    const [openSimpleModal, setOpenSimpleModal ] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal ] = useState(false);
+    const [userName, setUserName ] = useState(cookies.get('name'));
 
-    const [count,setCount ] = useState(0);
+    // ***** handles *****
+    const handleOpenModal = async (messageModalTemp, timeout) => {
+        setMessageModal(messageModalTemp);
+        setOpenSimpleModal(true);
+        setTimeout(function(){setOpenSimpleModal(false);}, timeout)
+    }
 
-    // const publish = ()  => {
-    //     // setPosts(null);
-    //     console.log("por siempre");
-    
-    //     axios.get(`http://localhost:3000/api/posts`)
-    //     .then( res => {
-    //         console.log(res);
-    //         setCount(count + 1)
-    //         setPosts(res.data);
-    //     })
-    //     .catch( error => {
-    //         console.log(error);
-    //     })        
-    // }
+    const handleOpenDeleteModal = async (id) => {
+        setMessageModal("¿Dese eliminar el Post?");
+        setPost_id(id);
+        setOpenDeleteModal(true);
+    }
 
+    // ***** call services *****
     const getPosts = async () => {
         setPosts([]);
         let res;
-        res = await service.getPosts();
-        // debugger
-        // await setPosts(res);// tal vez hay otra manera de sobreesscribir la variable posts
-        // setPosts([]);
+        res = await service.getPosts(user_id, filterPosts);
         setPosts(res);
-        // setPosts(... res);
-        // setPosts({res});
-        // setPosts([...res, posts]);
-    }
-
-    const prueba = async () => {
-        //setCount(count + 1);
+        console.log(res);
     }
 
     const insertPosts = async () => {
-        
-        // setUser_id("7a89f") ;
-        // setPrivacy("P");
-        // user_id = "7a89f";
-        // privacy = "P"
-        let res;
-        //debugger
-        // res = await service.insertPosts(user_id, message, privacy)
-        res = await service.insertPosts('6026086502d02327f4d55a7a', message, 'P');
-        // setPosts(posts.concat(res));
-        //setPosts(posts.concat(res))
-        getPosts(); // reload data
-        //count
-        //setCount(count + 1);
+        if (message.trim() === ""){
+            handleOpenModal("No se puede guardar un mensaje vacio.", 2500);
+        }else{
+            // let res = await service.insertPosts('6026086502d02327f4d55a7a', message, privacy);
+            let res = await service.insertPosts(user_id, message, privacy);
+            handleOpenModal("Guardado", 1500);
+            setMessage("");
+            getPosts(); // reload data
+        }
     }
 
-    // bueno
+    const updatePosts = async (id, message) => {
+        let res = await service.updatePosts(id, message);
+        handleOpenModal("Guardado", 1500);
+        getPosts();
+    }
+
+    const deletePosts = async () => {
+        setOpenDeleteModal(false);
+        let res = await service.deletePosts(post_id);
+        handleOpenModal("Eliminado", 1500);
+        getPosts();
+    }
+
+    const logout = async () => {
+        cookies.remove('isAuthenticated', {path: "/"});
+        cookies.remove('name', {path: "/"});
+        cookies.remove('email', {path: "/"});
+        cookies.remove('last_name', {path: "/"});
+        window.location.href=".";
+        let res = await userService.logoutUsers();
+    }
+
+    // *****  Hooks *****
     useEffect(async () => {
-        // await publish();
-        // let res;
-        // res = await foo.getPosts();
-        // setPosts(res);
-        // debugger;
         await getPosts();
-    },[]);
+    },[filterPosts]);
 
-
+    // good
     // useEffect(async () => {
-    //     // await publish();
-    //     // let res;
-    //     // res = await foo.getPosts();
-    //     // setPosts(res);
-    //     debugger;
     //     await getPosts();
-    // },[count]);
-
-    // ni bien se inicia se está recargando por eso poer el useeffect con contador
-    // revisar de frente como usar useEffect. nada mas y lo ponemos
-
-    // if (count === 0){
-    //     debugger;
-    //     publish();
-    // }
-
-    const numbers = [1, 2, 3, 4, 5];
-    const listItems = numbers.map((number) =>
-      <li>{number}</li>
-    );
+    // },[]);
 
     return (
         <React.Fragment>
@@ -114,42 +100,33 @@ function Menu(){
             <div class="row">
                 <div class="col">
                     <div class="float-right">
-                        {/* <Button>Victor2</Button> */}
-                        <DropdownButton id="dropdown-basic-button" title="Victor" className="session-button">
-                            <Dropdown.Item href="#/action-1">Cerrar sesión</Dropdown.Item>
+                        <DropdownButton id="dropdown-basic-button" title={userName} className="session-button">
+                            <Dropdown.Item href="#/action-1" onClick = {() => logout()} >Cerrar sesión</Dropdown.Item>
                         </DropdownButton>
                     </div>
                 </div>
             </div>            
-
-            {/* <label> Mi Menu</label> */}
-
-
             <div class="d-flex justify-content-center">
                 <div className="title-mnf">MiniFacebook</div>
             </div>            
-
             <div class="container">
-                
                 <div class="row">
-
                     <div class="col-sm-9 col-md-7 mx-auto">
                         <div class="card card-signin my-5">
                             <div class="card-body">
-        
-                                {/* <h5 class="card-title text-center">Sign In</h5> */}
 
                                 <div class="form-group">
-                                    <button onClick={getPosts}>Prueba</button>
+                                    {/* <button onClick={ prueba }>Prueba</button> */}
                                     <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" 
                                         placeholder="¿Qúe esta pasando?" style={{marginBottom:6}} 
                                         value={message} onChange={e => setMessage(e.target.value)}>
                                     </textarea>
                                 
                                     <Button className="float-right" size="sm" onClick={insertPosts} >Publicar</Button>
-                                    <Form.Control as="select" className="float-right custom-mfc-select" size="sm">
-                                        <option>Amigos</option>
-                                        <option>Público</option>
+                                    <Form.Control as="select" value = {privacy} onChange={e => setPrivacy(e.target.value)}
+                                        className="float-right custom-mfc-select" size="sm">
+                                        <option value="F">Amigos</option>
+                                        <option value="P">Público</option>
                                     </Form.Control>
                                     
                                 </div>
@@ -159,207 +136,53 @@ function Menu(){
                                     <hr style={{marginBottom:0}}></hr>
                                 </div>
 
-                                <div class="form-group" style={{marginTop:0}}>
-                                
-                                    <div class="form-inline" style={{marginBottom:20}}>
-                                        <div class="form-group">
-                                
-                                            <label class="form-check mr-sm-2">Filtrar por </label>
-                                            <select class="form-control form-control-sm" id="exampleFormControlSelect1">
-                                                <option>Todos</option>
-                                                <option>Amigos</option>
-                                                <option>Publico</option>
-                                            </select>
-
-                                        </div>
-                                    </div>
+                                <div class="form-group">
+                                    <label>Filtrar por: </label>
+                                    <select value = {filterPosts} onChange= {e => setFilterPosts(e.target.value)} class="form-control">
+                                        <option value="A">Todos</option>
+                                        <option value="F">Amigos</option>
+                                        <option value="P">Publico</option>
+                                    </select>
                                 </div>
 
-                                <ul class="list-group">
-
-                                    {/* <li>
-                                        <div>
-                                            <label>primero</label>
-                                        </div>
-                                    </li> */}
-
-
-                                    {/* {
-                                        (list.length === 0) ?
-                                            <div></div>
-                                        :
-                                            list.map(item => {
-                                                return(
-                                                    <li>
-                                                        <div>
-                                                            <label>{item.firstname}</label>
-                                                        </div>
-                                                    </li>
-                                                )
-                                            })
-                                    } */}
-
-                                    {/* {
-                                        (posts===null) ?
-                                            <div></div>
-                                        :
-                                            posts.map(item => {
-                                                return(
-                                                    <li>
-                                                        <div>
-                                                            <label>{item.message}</label>
-                                                        </div>
-                                                    </li>
-                                                )
-                                            })
-                                    } */}
-
-
-{/* ReactDOM.render(
-  <ul>{listItems}</ul>,
-  document.getElementById('root')
-); */}
-
-                                    {/* {
-                                        (posts===null) ?
-                                            <div></div>
-                                        :
-                                            posts.map(item => {
-                                                return(
-                                                    <li class="list-group-item">
-                                                    <div class="form-group">
-                                                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">
-                                                            {item.message}
-                                                        </textarea>
-                                                    </div>
-                                                    <Button className="" size="sm" >Editar</Button>
-                                                    <span class="tab-space"> </span>
-                                                    <Button className="" size="sm" >Eliminar</Button>
-                                                </li>
-                                                )
-                                            })
-                                    } */}
-
-
+                                <ul class="list-group" style={{marginTop: 20}}>
                                     {
-                                            posts.map(item => {
-                                                return(
-                                                    <li class="list-group-item">
-                                                    <div class="form-group">
-                                                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">
-                                                            {item.message}
-                                                        </textarea>
-                                                    </div>
-                                                    <Button className="" size="sm" >Editar</Button>
-                                                    <span class="tab-space"> </span>
-                                                    <Button className="" size="sm" >Eliminar</Button>
-                                                </li>
-                                                )
-                                            })
+                                        posts.map(item => {
+                                            let swDisa = true;
+                                            return(
+                                                <Tweet
+                                                    id = {item._id}
+                                                    message = {item.message}
+                                                    handleOpenDeleteModal = {handleOpenDeleteModal}
+                                                    updatePosts = {updatePosts}
+                                                ></Tweet>
+                                            )
+                                        })
                                     }
-
-
-
-                                    
-{/* 
-                                    {posts.map(item => {
-                                        return(
-                                            <li>
-                                                <div>
-                                                    <label>{item.message}</label>
-                                                </div>
-                                            </li>
-                                        )
-                                    })}                                         
-*/}
-
-
-                                    {/* <li class="list-group-item">
-                                        <div class="form-group">
-                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                        </div>
-                                        <Button className="" size="sm" >Editar</Button>
-                                        <span class="tab-space"> </span>
-                                        <Button className="" size="sm" >Eliminar</Button>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="form-group">
-                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                        </div>
-                                        <Button className="" size="sm" >Editar</Button>
-                                        <span class="tab-space"> </span>
-                                        <Button className="" size="sm" >Eliminar</Button>
-                                    </li>
-
-                                    <li class="list-group-item">
-                                        <div class="form-group">
-                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                        </div>
-                                        <Button className="" size="sm" >Editar</Button>
-                                        <span class="tab-space"> </span>
-                                        <Button className="" size="sm" >Eliminar</Button>
-                                    </li>
-
-                                    <li class="list-group-item">
-                                        <div class="form-group">
-                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                        </div>
-                                        <Button className="" size="sm" >Editar</Button>
-                                        <span class="tab-space"> </span>
-                                        <Button className="" size="sm" >Eliminar</Button>
-                                    </li>
-
-                                    <li class="list-group-item">
-                                        <div class="form-group">
-                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                        </div>
-                                        <Button className="" size="sm" >Editar</Button>
-                                        <span class="tab-space"> </span>
-                                        <Button className="" size="sm" >Eliminar</Button>
-                                    </li>
-
-                                    <li class="list-group-item">
-                                        <div class="form-group">
-                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                        </div>
-                                        <Button className="" size="sm" >Editar</Button>
-                                        <span class="tab-space"> </span>
-                                        <Button className="" size="sm" >Eliminar</Button>
-                                    </li>
-
-                                    <li class="list-group-item">
-                                        <div class="form-group">
-                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                        </div>
-                                        <Button className="" size="sm" >Editar</Button>
-                                        <span class="tab-space"> </span>
-                                        <Button className="" size="sm" >Eliminar</Button>
-                                    </li>                                    
-
-                                    <li class="list-group-item">
-                                        <div class="form-group">
-                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                        </div>
-                                        <Button className="" size="sm" >Editar</Button>
-                                        <span class="tab-space"> </span>
-                                        <Button className="" size="sm" >Eliminar</Button>
-                                    </li>                                     */}
-
-
                                 </ul>
-            
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <Modal show={openSimpleModal} onHide={ () => setOpenSimpleModal(false) }>
+                <Modal.Header closeButton><Modal.Title>Información</Modal.Title></Modal.Header>
+                <Modal.Body><p>{messageModal}</p></Modal.Body>
+            </Modal>
+ 
+            <Modal show={openDeleteModal} onHide={ () => setOpenDeleteModal(false)}>
+                <Modal.Header closeButton><Modal.Title>Alerta</Modal.Title></Modal.Header>
+                <Modal.Body><p>{messageModal}</p></Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={deletePosts}>Si</Button>
+                    <Button variant="primary" onClick={ () => setOpenDeleteModal(false)}>No</Button>
+                </Modal.Footer>
+            </Modal>
+
         </div>
-
     </React.Fragment>
-
     )
-
 }
 
 export default Menu;
