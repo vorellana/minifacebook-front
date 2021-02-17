@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const exp = {}
     
-const baseUrl = 'http://192.168.1.2:3000/api'; // test
+// const baseUrl = 'http://192.168.1.2:3000/api'; // test
 // const baseUrl = 'http://localhost:3000/api'; // test
-// const baseUrl = 'https://minifacebook-21.herokuapp.com/api' // prod
+const baseUrl = 'https://minifacebook-21.herokuapp.com/api' // prod
 
 let response;
 
