@@ -71,3 +71,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 
 001 - vo
+
+![Screenshot](screenshot.png)
+
+![alt text](https://github.com/vorellana/minifacebook-front/blob/main/public/logo192.png?raw=true)
